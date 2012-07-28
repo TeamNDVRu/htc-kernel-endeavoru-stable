@@ -268,20 +268,6 @@ static ssize_t store_sampling_rate(struct kobject *a, struct attribute *b,
 	return count;
 }
 
-static ssize_t store_touch_poke(struct kobject *a, struct attribute *b,
-				   const char *buf, size_t count)
-{
-	unsigned int input;
-	int ret;
-	ret = sscanf(buf, "%u", &input);
-	if (ret != 1)
-		return -EINVAL;
-
-	dbs_tuners_ins.touch_poke = input;
-
-	return count;
-}
-
 static ssize_t store_io_is_busy(struct kobject *a, struct attribute *b,
 				   const char *buf, size_t count)
 {
@@ -420,9 +406,6 @@ static void dbs_freq_increase(struct cpufreq_policy *p, unsigned int freq)
 static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 {
 	unsigned int max_load_freq;
-	unsigned int debug_freq;
-	unsigned int debug_load;
-	unsigned int debug_iowait;
 
 	struct cpufreq_policy *policy;
 	unsigned int j;
@@ -506,11 +489,8 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 			freq_avg = policy->cur;
 
 		load_freq = load * freq_avg;
-		if (load_freq > max_load_freq) {
+		if (load_freq > max_load_freq)
 			max_load_freq = load_freq;
-			debug_load = load;
-			debug_iowait = 100 * iowait_time / wall_time;
-		}
 	}
 
 	/* Check for frequency increase */
@@ -548,23 +528,14 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 			freq_next = policy->min;
 
 		if (!dbs_tuners_ins.powersave_bias) {
-			debug_freq = freq_next;
 			__cpufreq_driver_target(policy, freq_next,
 					CPUFREQ_RELATION_L);
 		} else {
 			int freq = powersave_bias_target(policy, freq_next,
 					CPUFREQ_RELATION_L);
-			debug_freq = freq;
 			__cpufreq_driver_target(policy, freq,
 				CPUFREQ_RELATION_L);
 		}
-
-		CPU_DEBUG_PRINTK(CPU_DEBUG_GOVERNOR, " cpu%d,"
-                                " load=%3u, iowait=%3u,"
-                                " freq=%7u(%7u), counter=%d, phase=%d",
-                                policy->cpu,
-                                debug_load, debug_iowait,
-                                debug_freq, policy->cur, counter, phase);
 	}
 }
 
