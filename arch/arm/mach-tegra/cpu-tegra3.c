@@ -626,6 +626,10 @@ static int min_cpus_notify(struct notifier_block *nb, unsigned long n, void *p)
 	mutex_lock(tegra3_cpu_lock);
 
 	if ((n >= 1) && is_lp_cluster()) {
+	/* make sure cpu rate is within g-mode range before switching */
+	unsigned int speed = max(
+	tegra_getspeed(0), clk_get_min_rate(cpu_g_clk) / 1000);
+	tegra_update_cpu_speed(speed);
 		if (!clk_set_parent(cpu_clk, cpu_g_clk)) {
 			CPU_DEBUG_PRINTK(CPU_DEBUG_HOTPLUG,
 					 " leave LPCPU (%s)", __func__);
