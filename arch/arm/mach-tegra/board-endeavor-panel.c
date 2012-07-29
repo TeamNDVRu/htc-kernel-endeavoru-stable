@@ -114,11 +114,11 @@ static void mhl_gpio_switch(int on)
 #define ORIG_PWM_MIN 30
 
 #define MAP_SHARP_MAX 255
-#define MAP_SHARP_DEF 90
+#define MAP_SHARP_DEF 85
 #define MAP_SHARP_MIN 7
 
 #define MAP_SONY_MAX 255
-#define MAP_SONY_DEF 90
+#define MAP_SONY_DEF 85
 #define MAP_SONY_MIN 7
 
 static int min_pwm = MAP_SHARP_MAX;
@@ -169,7 +169,7 @@ static struct platform_tegra_pwm_backlight_data enterprise_disp1_backlight_data 
 	.gpio_conf_to_sfio	= TEGRA_GPIO_PW1,
 	.switch_to_sfio		= &tegra_gpio_disable,
 	.max_brightness		= 255,
-	.dft_brightness		= 80,
+	.dft_brightness		= 85,
 	.notify		= enterprise_backlight_notify,
 	.period			= 0xFF,
 	.clk_div		= 20,
