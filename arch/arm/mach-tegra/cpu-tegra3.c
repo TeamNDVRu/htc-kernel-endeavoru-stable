@@ -345,7 +345,8 @@ static void tegra_auto_hotplug_work_func(struct work_struct *work)
 			queue_delayed_work(
 				hotplug_wq, &hotplug_work, down_delay);
 			hp_stats_update(cpu, false);
-		} else if (!is_lp_cluster() && !no_lp) {
+		} else if (!is_lp_cluster() && !no_lp &&
+			!pm_qos_request(PM_QOS_MIN_ONLINE_CPUS)) {
 			if(!clk_set_parent(cpu_clk, cpu_lp_clk)) {
 				CPU_DEBUG_PRINTK(CPU_DEBUG_HOTPLUG, " enter LPCPU");
 				hp_stats_update(CONFIG_NR_CPUS, true);
@@ -624,7 +625,7 @@ static int min_cpus_notify(struct notifier_block *nb, unsigned long n, void *p)
 {
 	mutex_lock(tegra3_cpu_lock);
 
-	if ((n >= 2) && is_lp_cluster()) {
+	if ((n >= 1) && is_lp_cluster()) {
 		if (!clk_set_parent(cpu_clk, cpu_g_clk)) {
 			CPU_DEBUG_PRINTK(CPU_DEBUG_HOTPLUG,
 					 " leave LPCPU (%s)", __func__);

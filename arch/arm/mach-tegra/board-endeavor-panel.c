@@ -336,25 +336,7 @@ static int bridge_reset(void)
 	hr_msleep(10);
 
 	/*change LCM_TE & LCM_PWM to SFIO*/
-	//tegra_gpio_disable(LCM_PWM);
 	tegra_gpio_disable(LCM_TE);
-
-	/*TODO: workaround to prevent panel off during dc_probe, remove it later*/
-	if(g_display_on)
-	{
-		REGULATOR_GET(enterprise_dsi_reg, "avdd_dsi_csi");
-		regulator_enable(enterprise_dsi_reg);
-
-		REGULATOR_GET(v_lcm_3v3, "v_lcm_3v3");
-		REGULATOR_GET(v_lcmio_1v8, "v_lcmio_1v8");
-
-		regulator_enable(v_lcmio_1v8);
-		regulator_enable(v_lcm_3v3);
-
-		DISP_INFO_LN("Workaround for first panel init sequence\n");
-		goto success;
-		return 0;
-	}
 
 	REGULATOR_GET(enterprise_dsi_reg, "avdd_dsi_csi");
 	regulator_enable(enterprise_dsi_reg);
